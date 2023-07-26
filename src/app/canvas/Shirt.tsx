@@ -18,15 +18,20 @@ type GLTFResult = GLTF & {
 };
 
 function Shirt(props: JSX.IntrinsicElements["group"]) {
-  const group = useRef<Three.Group>();
   const snap = useSnapshot(state);
   const { nodes, materials } = useGLTF("/shirt_baked.glb") as GLTFResult;
 
   const logoTexture = useTexture(snap.logoDecal);
   const fullTexture = useTexture(snap.fullDecal);
 
+  useFrame((state, delta) =>
+    easing.dampC(materials.lambert1.color, snap.color, 0.25, delta)
+  );
+
+  const stateString = JSON.stringify(snap);
+
   return (
-    <group>
+    <group key={stateString}>
       <mesh
         castShadow
         geometry={nodes.T_Shirt_male.geometry}
